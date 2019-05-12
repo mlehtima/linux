@@ -76,6 +76,64 @@
 	status = "okay";
 };
 
+&gpu_opp_tables {
+	status = "ok";
+};
+
+&gpu {
+	status = "ok";
+};
+
+&mdss {
+	status = "ok";
+};
+
+&mdp {
+	status = "ok";
+};
+
+&dsi0 {
+	status = "ok";
+
+	vdda-supply = <&pm8941_l2>;
+	vdd-supply = <&pm8941_l22>;
+	vddio-supply = <&pm8941_l12>;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&panel_in>;
+				data-lanes = <0 1 2 3>;
+			};
+		};
+	};
+
+	panel: panel@0 {
+		reg = <0>;
+		compatible = "something,s6d6fa1";
+
+		reset-gpios = <&pm8941_gpios 19 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&panel_pin>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+
+&dsi0-phy {
+	status = "ok";
+
+	vddio-supply = <&pm8941_l12>;
+};
+
 &imem {
 	reboot-mode {
 		mode-normal	= <0x77665501>;
@@ -376,6 +434,16 @@
 };
 
 &tlmm {
+	panel_pin: panel {
+		te {
+			pins = "gpio12";
+			function = "mdp_vsync";
+
+			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
 	sdc1_on: sdc1-on {
 		clk {
 			pins = "sdc1_clk";
