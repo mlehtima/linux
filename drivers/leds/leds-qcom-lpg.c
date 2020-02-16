@@ -845,7 +845,7 @@ static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 }
 
 static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-			 struct pwm_state *state)
+			 const 	struct pwm_state *state)
 {
 	struct lpg *lpg = container_of(chip, struct lpg, pwm);
 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
@@ -858,8 +858,8 @@ static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	triled_set(lpg, chan->triled_mask, chan->enabled);
 
-	state->polarity = PWM_POLARITY_NORMAL;
-	state->period = chan->period_us * NSEC_PER_USEC;
+//	state->polarity = PWM_POLARITY_NORMAL;
+//	state->period = chan->period_us * NSEC_PER_USEC;
 
 	return 0;
 }
@@ -938,7 +938,7 @@ static int lpg_add_led(struct lpg *lpg, struct device_node *np)
 	if (lpg->lut_base) {
 		led->cdev.pattern_set = lpg_pattern_set;
 		led->cdev.pattern_clear = lpg_pattern_clear;
-//		led->cdev.pattern_get = lpg_pattern_get; FIXME
+//		led->cdev.pattern_get = lpg_pattern_get; //FIXME
 	}
 
 	if (!of_property_read_string(np, "default-state", &state) &&
