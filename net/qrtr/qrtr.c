@@ -1000,7 +1000,7 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 
 	lock_sock(sk);
 
-	printk(KERN_DEBUG "qrtr_recvmsg\n");
+	printk(KERN_DEBUG "qrtr_recvmsg 1\n");
 
 	if (sock_flag(sk, SOCK_ZAPPED)) {
 		release_sock(sk);
@@ -1025,6 +1025,7 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 	if (rc < 0)
 		goto out;
 	rc = copied;
+	printk(KERN_DEBUG "qrtr_recvmsg 2\n");
 
 	if (addr) {
 		addr->sq_family = AF_QIPCRTR;
@@ -1039,6 +1040,7 @@ out:
 
 	skb_free_datagram(sk, skb);
 	release_sock(sk);
+	printk(KERN_DEBUG "qrtr_recvmsg 3\n");
 
 	return rc;
 }
