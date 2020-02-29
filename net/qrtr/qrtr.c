@@ -873,6 +873,8 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	u32 type;
 	int rc;
 
+	printk(KERN_DEBUG "qrtr_sendmsg\n");
+
 	if (msg->msg_flags & ~(MSG_DONTWAIT))
 		return -EINVAL;
 
@@ -997,6 +999,8 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 	int copied, rc;
 
 	lock_sock(sk);
+
+	printk(KERN_DEBUG "qrtr_recvmsg\n");
 
 	if (sock_flag(sk, SOCK_ZAPPED)) {
 		release_sock(sk);
