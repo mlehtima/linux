@@ -8,6 +8,9 @@
 #include <dt-bindings/clock/qcom,rpmcc.h>
 #include <dt-bindings/reset/qcom,gcc-msm8974.h>
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/soc/qcom,apr.h>
+#include <dt-bindings/sound/qcom,q6afe.h>
+#include <dt-bindings/sound/qcom,q6asm.h>
 
 / {
 	#address-cells = <1>;
@@ -355,6 +358,9 @@
 			     <GIC_PPI 4 0xf08>,
 			     <GIC_PPI 1 0xf08>;
 		clock-frequency = <19200000>;
+	};
+
+	sound: sound {
 	};
 
 	adsp-pil {

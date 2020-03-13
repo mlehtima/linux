@@ -2243,8 +2243,10 @@ EXPORT_SYMBOL_GPL(snd_soc_add_dai_controls);
  */
 int snd_soc_register_card(struct snd_soc_card *card)
 {
-	if (!card->name || !card->dev)
+	if (!card->name || !card->dev) {
+		printk(KERN_ERR "snd_soc_register_card: !card->name || !card->dev bane %s dev %p\n", card->name, card->dev);
 		return -EINVAL;
+	}
 
 	dev_set_drvdata(card->dev, card);
 

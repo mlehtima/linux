@@ -606,3 +606,8 @@
 		};
 	};
 };
+
+&sound {
+	compatible = "qcom,msm8974-sndcard";
+	qcom,model = "msm8974";
+};
