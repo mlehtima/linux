@@ -123,7 +123,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
 
 	/* Check SPEED_BIN_BLOW_STATUS */
 	if (pte_efuse & BIT(3)) {
-		dev_dbg(cpu_dev, "Speed bin: %d\n", *speed);
+		dev_warn(cpu_dev, "Speed bin: %d\n", *speed);
 	} else {
 		dev_warn(cpu_dev, "Speed bin not set. Defaulting to 0!\n");
 		*speed = 0;
@@ -133,13 +133,13 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
 	pte_efuse = *(((u32 *)buf) + 4);
 	pte_efuse &= BIT(21);
 	if (pte_efuse) {
-		dev_dbg(cpu_dev, "PVS bin: %d\n", *pvs);
+		dev_warn(cpu_dev, "PVS bin: %d\n", *pvs);
 	} else {
 		dev_warn(cpu_dev, "PVS bin not set. Defaulting to 0!\n");
 		*pvs = 0;
 	}
 
-	dev_dbg(cpu_dev, "PVS version: %d\n", *pvs_ver);
+	dev_warn(cpu_dev, "PVS version: %d\n", *pvs_ver);
 }
 
 static enum _msm8996_version qcom_cpufreq_get_msm_id(void)
