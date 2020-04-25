@@ -29,11 +29,12 @@
 #define CAMSS_CSID_HW_VERSION		0x0
 #define CAMSS_CSID_CORE_CTRL_0		0x004
 #define CAMSS_CSID_CORE_CTRL_1		0x008
-#define CAMSS_CSID_RST_CMD(v)		((v) == CAMSS_8x16 ? 0x00c : 0x010)
+#define CAMSS_CSID_RST_CMD(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x00c : 0x010)
 #define CAMSS_CSID_CID_LUT_VC_n(v, n)	\
-			(((v) == CAMSS_8x16 ? 0x010 : 0x014) + 0x4 * (n))
+	(((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x010 : 0x014) + 0x4 * (n))
 #define CAMSS_CSID_CID_n_CFG(v, n)	\
-			(((v) == CAMSS_8x16 ? 0x020 : 0x024) + 0x4 * (n))
+	(((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x020 : 0x024) + 0x4 * (n))
 #define CAMSS_CSID_CID_n_CFG_ISPIF_EN	BIT(0)
 #define CAMSS_CSID_CID_n_CFG_RDI_EN	BIT(1)
 #define CAMSS_CSID_CID_n_CFG_DECODE_FORMAT_SHIFT	4
@@ -43,21 +44,26 @@
 #define CAMSS_CSID_CID_n_CFG_PLAIN_ALIGNMENT_MSB	(1 << 9)
 #define CAMSS_CSID_CID_n_CFG_RDI_MODE_RAW_DUMP		(0 << 10)
 #define CAMSS_CSID_CID_n_CFG_RDI_MODE_PLAIN_PACKING	(1 << 10)
-#define CAMSS_CSID_IRQ_CLEAR_CMD(v)	((v) == CAMSS_8x16 ? 0x060 : 0x064)
-#define CAMSS_CSID_IRQ_MASK(v)		((v) == CAMSS_8x16 ? 0x064 : 0x068)
-#define CAMSS_CSID_IRQ_STATUS(v)	((v) == CAMSS_8x16 ? 0x068 : 0x06c)
-#define CAMSS_CSID_TG_CTRL(v)		((v) == CAMSS_8x16 ? 0x0a0 : 0x0a8)
+#define CAMSS_CSID_IRQ_CLEAR_CMD(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x060 : 0x064)
+#define CAMSS_CSID_IRQ_MASK(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x064 : 0x068)
+#define CAMSS_CSID_IRQ_STATUS(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x068 : 0x06c)
+#define CAMSS_CSID_TG_CTRL(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x0a0 : 0x0a8)
 #define CAMSS_CSID_TG_CTRL_DISABLE	0xa06436
 #define CAMSS_CSID_TG_CTRL_ENABLE	0xa06437
-#define CAMSS_CSID_TG_VC_CFG(v)		((v) == CAMSS_8x16 ? 0x0a4 : 0x0ac)
+#define CAMSS_CSID_TG_VC_CFG(v)	\
+	((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x0a4 : 0x0ac)
 #define CAMSS_CSID_TG_VC_CFG_H_BLANKING		0x3ff
 #define CAMSS_CSID_TG_VC_CFG_V_BLANKING		0x7f
 #define CAMSS_CSID_TG_DT_n_CGG_0(v, n)	\
-			(((v) == CAMSS_8x16 ? 0x0ac : 0x0b4) + 0xc * (n))
+	(((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x0ac : 0x0b4) + 0xc * (n))
 #define CAMSS_CSID_TG_DT_n_CGG_1(v, n)	\
-			(((v) == CAMSS_8x16 ? 0x0b0 : 0x0b8) + 0xc * (n))
+	(((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x0b0 : 0x0b8) + 0xc * (n))
 #define CAMSS_CSID_TG_DT_n_CGG_2(v, n)	\
-			(((v) == CAMSS_8x16 ? 0x0b4 : 0x0bc) + 0xc * (n))
+	(((v) == CAMSS_8x16 || (v) == CAMSS_8x74 ? 0x0b4 : 0x0bc) + 0xc * (n))
 
 #define DATA_TYPE_EMBEDDED_DATA_8BIT	0x12
 #define DATA_TYPE_YUV422_8BIT		0x1e
@@ -378,7 +384,8 @@ static u32 csid_find_code(u32 *code, unsigned int n_code,
 static u32 csid_src_pad_code(struct csid_device *csid, u32 sink_code,
 			     unsigned int index, u32 src_req_code)
 {
-	if (csid->camss->version == CAMSS_8x16) {
+	if (csid->camss->version == CAMSS_8x16 ||
+	    csid->camss->version == CAMSS_8x74) {
 		if (index > 0)
 			return 0;
 
@@ -1092,7 +1099,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 	csid->camss = camss;
 	csid->id = id;
 
-	if (camss->version == CAMSS_8x16) {
+	if (camss->version == CAMSS_8x16 || camss->version == CAMSS_8x74) {
 		csid->formats = csid_formats_8x16;
 		csid->nformats =
 				ARRAY_SIZE(csid_formats_8x16);
