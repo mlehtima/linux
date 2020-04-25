@@ -380,7 +380,8 @@ static u32 csid_find_code(u32 *code, unsigned int n_code,
 static u32 csid_src_pad_code(struct csid_device *csid, u32 sink_code,
 			     unsigned int index, u32 src_req_code)
 {
-	if (csid->camss->version == CAMSS_8x16) {
+	if (csid->camss->version == CAMSS_8x16 ||
+	    csid->camss->version == CAMSS_8x74) {
 		if (index > 0)
 			return 0;
 
@@ -1096,7 +1097,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
 	csid->camss = camss;
 	csid->id = id;
 
-	if (camss->version == CAMSS_8x16) {
+	if (camss->version == CAMSS_8x16 || camss->version == CAMSS_8x74) {
 		csid->formats = csid_formats_8x16;
 		csid->nformats =
 				ARRAY_SIZE(csid_formats_8x16);
