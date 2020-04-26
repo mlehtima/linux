@@ -14,6 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/of_graph.h>
+#include <linux/of_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/pm_domain.h>
 #include <linux/slab.h>
@@ -533,12 +534,12 @@ int camss_get_pixel_clock(struct media_entity *entity, u32 *pixel_clock)
 
 	subdev = media_entity_to_v4l2_subdev(sensor);
 
-	ctrl = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
+	//ctrl = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
 
-	if (!ctrl)
-		return -EINVAL;
+	//if (!ctrl)
+	//	return -EINVAL;
 
-	*pixel_clock = v4l2_ctrl_g_ctrl_int64(ctrl);
+	*pixel_clock = 259200000; //v4l2_ctrl_g_ctrl_int64(ctrl);
 
 	return 0;
 }
