@@ -430,9 +430,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	unsigned int ver;
 	size_t hdrlen;
 
+	printk(KERN_DEBUG "qrtr_endpoint_post 1\n");
+
 	if (len == 0 || len & 3)
 		return -EINVAL;
 
+	printk(KERN_DEBUG "qrtr_endpoint_post 2\n");
 	skb = netdev_alloc_skb(NULL, len);
 	if (!skb)
 		return -ENOMEM;
@@ -442,8 +445,10 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 	/* Version field in v1 is little endian, so this works for both cases */
 	ver = *(u8*)data;
 
+	printk(KERN_DEBUG "qrtr_endpoint_post 3\n");
 	switch (ver) {
 	case QRTR_PROTO_VER_1:
+		printk(KERN_DEBUG "qrtr_endpoint_post proto ver1\n");
 		if (len < sizeof(*v1))
 			goto err;
 		v1 = data;
@@ -459,6 +464,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 		size = le32_to_cpu(v1->size);
 		break;
 	case QRTR_PROTO_VER_2:
+		printk(KERN_DEBUG "qrtr_endpoint_post proto ver2\n");
 		if (len < sizeof(*v2))
 			goto err;
 		v2 = data;
@@ -507,6 +513,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
 		qrtr_port_put(ipc);
 	}
 
+	printk(KERN_DEBUG "qrtr_endpoint_post end\n");
 	return 0;
 
 err:
@@ -882,6 +889,8 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	u32 type;
 	int rc;
 
+	printk(KERN_DEBUG "qrtr_sendmsg\n");
+
 	if (msg->msg_flags & ~(MSG_DONTWAIT))
 		return -EINVAL;
 
@@ -1008,6 +1017,8 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 
 	lock_sock(sk);
 
+	printk(KERN_DEBUG "qrtr_recvmsg 1\n");
+
 	if (sock_flag(sk, SOCK_ZAPPED)) {
 		release_sock(sk);
 		return -EADDRNOTAVAIL;
@@ -1031,6 +1042,7 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 	if (rc < 0)
 		goto out;
 	rc = copied;
+	printk(KERN_DEBUG "qrtr_recvmsg 2 rc %i\n", rc);
 
 	if (addr) {
 		addr->sq_family = AF_QIPCRTR;
@@ -1045,6 +1057,7 @@ out:
 
 	skb_free_datagram(sk, skb);
 	release_sock(sk);
+	printk(KERN_DEBUG "qrtr_recvmsg 3 rc %i\n", rc);
 
 	return rc;
 }

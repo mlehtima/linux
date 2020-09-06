@@ -22,6 +22,7 @@ static int qcom_smd_qrtr_callback(struct rpmsg_device *rpdev,
 {
 	struct qrtr_smd_dev *qdev = dev_get_drvdata(&rpdev->dev);
 	int rc;
+	printk(KERN_DEBUG "qcom_smd_qrtr_callback 1\n");
 
 	if (!qdev)
 		return -EAGAIN;
@@ -32,6 +33,7 @@ static int qcom_smd_qrtr_callback(struct rpmsg_device *rpdev,
 		/* return 0 to let smd drop the packet */
 		rc = 0;
 	}
+	printk(KERN_DEBUG "qcom_smd_qrtr_callback 2 rc %i\n", rc);
 
 	return rc;
 }
@@ -41,18 +43,21 @@ static int qcom_smd_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
 {
 	struct qrtr_smd_dev *qdev = container_of(ep, struct qrtr_smd_dev, ep);
 	int rc;
+	printk(KERN_DEBUG "qcom_smd_qrtr_send 1\n");
 
 	rc = skb_linearize(skb);
 	if (rc)
 		goto out;
 
 	rc = rpmsg_send(qdev->channel, skb->data, skb->len);
+	printk(KERN_DEBUG "qcom_smd_qrtr_send 2 rc %i\n", rc);
 
 out:
 	if (rc)
 		kfree_skb(skb);
 	else
 		consume_skb(skb);
+	printk(KERN_DEBUG "qcom_smd_qrtr_send 3 rc %i\n", rc);
 	return rc;
 }
 
