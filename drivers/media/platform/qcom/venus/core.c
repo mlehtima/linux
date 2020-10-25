@@ -418,6 +418,51 @@ static const struct venus_resources msm8916_res = {
 	.fwname = "qcom/venus-1.8/venus.mdt",
 };
 
+static const struct freq_tbl msm8974_freq_table[] = {
+	{ 979200, 410000000 },	/* 4k UHD @ 30 ?? */
+	{ 783360, 410000000 },	/* 4k UHD @ 24 ?? */
+	{ 489600, 266670000 },	/* 1920x1088 @ 60 ?? */
+	{ 244800, 133330000 },	/* 1920x1088 @ 30 ?? */
+};
+
+static const struct reg_val msm8974_reg_preset[] = {
+	{ 0x80004, 0x00000001 },
+	{ 0x80178, 0x00001fff },
+	{ 0x8017c, 0x1fff1fff },
+	{ 0x800b0, 0x10101001 },
+	{ 0x800b4, 0x10101010 },
+	{ 0x800b8, 0x10101010 },
+	{ 0x800bc, 0x00000010 },
+	{ 0x800c0, 0x1010100f },
+	{ 0x800c4, 0x10101010 },
+	{ 0x800c8, 0x10101010 },
+	{ 0x800cc, 0x00000010 },
+	{ 0x800d0, 0x00001010 },
+	{ 0x800d4, 0x00001010 },
+	{ 0x800f0, 0x00000030 },
+	{ 0x800d8, 0x00000707 },
+	{ 0x800dc, 0x00000707 },
+	{ 0x80124, 0x00000001 },
+	{ 0xE0020, 0x05555556 },
+	{ 0xE0024, 0x00000000 },
+};
+
+static const struct venus_resources msm8974_res = {
+	.freq_tbl = msm8974_freq_table,
+	.freq_tbl_size = ARRAY_SIZE(msm8974_freq_table),
+	.reg_tbl = msm8974_reg_preset,
+	.reg_tbl_size = ARRAY_SIZE(msm8974_reg_preset),
+	.clks = { "core", "iface", "bus", },
+	.clks_num = 3,
+	.max_load = 1216800, /* 3840 x 2160 @ 30 + 1080p @ 30*/
+	.hfi_version = HFI_VERSION_1XX,
+	.vmem_id = VIDC_RESOURCE_NONE, //VIDC_RESOURCE_OCMEM,
+	.vmem_size = 0, // 524288, ????
+	.vmem_addr = 0, // ????
+	.dma_mask = 0xddc00000 - 1,
+	.fwname = "qcom/venus-1.8/venus.mdt",
+};
+
 static const struct freq_tbl msm8996_freq_table[] = {
 	{ 1944000, 520000000 },	/* 4k UHD @ 60 (decode only) */
 	{  972000, 520000000 },	/* 4k UHD @ 30 */
@@ -586,6 +631,7 @@ static const struct venus_resources sc7180_res = {
 
 static const struct of_device_id venus_dt_match[] = {
 	{ .compatible = "qcom,msm8916-venus", .data = &msm8916_res, },
+	{ .compatible = "qcom,msm8974-venus", .data = &msm8974_res, },
 	{ .compatible = "qcom,msm8996-venus", .data = &msm8996_res, },
 	{ .compatible = "qcom,sdm845-venus", .data = &sdm845_res, },
 	{ .compatible = "qcom,sdm845-venus-v2", .data = &sdm845_res_v2, },
