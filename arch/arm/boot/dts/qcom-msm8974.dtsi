@@ -1408,6 +1408,52 @@
 			};
 		};
 
+/*
+		venus_iommu: iommu@fdc84000 {
+			compatible = "qcom,msm8974-iommu",
+			             "qcom,msm-iommu-v1";
+			reg = <0xfdc84000 0x8000,
+			       0xfdce0004 0x4>;
+			reg-names = iommu_base",
+			            "clk_base;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			#iommu-cells = <1>;
+			ranges = <0 0xfdc8b000 0x9000>;
+
+			clocks = <&mmcc VENUS0_AHB_CLK>,
+			         <&mmcc VENUS0_AXI_CLK>,
+			         <&mmcc VENUS0_VCODEC0_CLK>;
+			clock-names = "iface", "bus", "alt";
+
+//			qcom,iommu-secure-id = <0>;
+
+			interrupts = <0 45 0>;
+			power-domains = <&mmcc VENUS0_GDSC>;
+
+			// venus_ns
+			iommu-ctx@1000 {
+				compatible = "qcom,msm-iommu-v1-ns";
+				reg = <0x1000 0x1000>;
+				interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
+			};
+
+			// venus_sc
+			iommu-ctx@2000 {
+				compatible = "qcom,msm-iommu-v1-sec";
+				reg = <0x2000 0x1000>;
+				interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
+			};
+
+			// venus fw
+			iommu-ctx@3000 {
+				compatible = "qcom,msm-iommu-v1-sec";
+				reg = <0x3000 0x1000>;
+				interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
+			};
+		};
+*/
+
 		gpu_iommu: iommu@fdb10000 {
 			compatible = "qcom,msm8974-iommu", "qcom,msm-iommu-v1";
 
@@ -1469,6 +1515,14 @@
 			gmu_sram: gmu-sram@0 {
 				reg = <0x0 0x100000>;
 			};
+/*
+			gmu_sram_lp_audio: gmu-sram@100000 {
+				reg = <0x100000 0x80000>;
+			};
+			gmu_sram_video: gmu-sram@180000 {
+				reg = <0x180000 0x80000>;
+			};
+*/
 		};
 
 		bimc: interconnect@fc380000 {
