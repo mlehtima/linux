@@ -223,10 +223,12 @@ static int qcom_cpufreq_krait_name_version(struct device *cpu_dev,
 
 	switch (len) {
 	case 4:
+		dev_warn(cpu_dev, "qcom_cpufreq_krait_name_version len %d\n", len);
 		get_krait_bin_format_a(cpu_dev, &speed, &pvs, &pvs_ver,
 				       speedbin_nvmem, speedbin);
 		break;
 	case 8:
+		dev_warn(cpu_dev, "qcom_cpufreq_krait_name_version len %d\n", len);
 		get_krait_bin_format_b(cpu_dev, &speed, &pvs, &pvs_ver,
 				       speedbin_nvmem, speedbin);
 		break;
@@ -237,6 +239,8 @@ static int qcom_cpufreq_krait_name_version(struct device *cpu_dev,
 
 	snprintf(*pvs_name, sizeof("speedXX-pvsXX-vXX"), "speed%d-pvs%d-v%d",
 		 speed, pvs, pvs_ver);
+	dev_warn(cpu_dev, "qcom_cpufreq_krait_name_version speed%d-pvs%d-v%d : name %s\n",
+		 speed, pvs, pvs_ver, *pvs_name);
 
 	drv->versions = (1 << speed);
 
@@ -270,18 +274,21 @@ static int qcom_cpufreq_probe(struct platform_device *pdev)
 	int ret;
 
 	cpu_dev = get_cpu_device(0);
+	dev_warn(cpu_dev, "qcom_cpufreq_probe\n");
 	if (!cpu_dev)
 		return -ENODEV;
 
 	np = dev_pm_opp_of_get_opp_desc_node(cpu_dev);
 	if (!np)
 		return -ENOENT;
+	dev_warn(cpu_dev, "qcom_cpufreq_probe 1\n");
 
 	ret = of_device_is_compatible(np, "operating-points-v2-kryo-cpu");
 	if (!ret) {
 		of_node_put(np);
 		return -ENOENT;
 	}
+	dev_warn(cpu_dev, "qcom_cpufreq_probe 2\n");
 
 	drv = kzalloc(sizeof(*drv), GFP_KERNEL);
 	if (!drv)
@@ -295,6 +302,7 @@ static int qcom_cpufreq_probe(struct platform_device *pdev)
 	}
 
 	if (drv->data->get_version) {
+		dev_warn(cpu_dev, "qcom_cpufreq_probe parse cpu get_version\n");
 		speedbin_nvmem = of_nvmem_cell_get(np, NULL);
 		if (IS_ERR(speedbin_nvmem)) {
 			if (PTR_ERR(speedbin_nvmem) != -EPROBE_DEFER)
@@ -339,6 +347,7 @@ static int qcom_cpufreq_probe(struct platform_device *pdev)
 	}
 
 	for_each_possible_cpu(cpu) {
+		dev_warn(cpu_dev, "qcom_cpufreq_probe parse cpu\n");
 		cpu_dev = get_cpu_device(cpu);
 		if (NULL == cpu_dev) {
 			ret = -ENODEV;
@@ -348,6 +357,7 @@ static int qcom_cpufreq_probe(struct platform_device *pdev)
 		if (drv->data->get_version) {
 
 			if (pvs_name) {
+				dev_warn(cpu_dev, "qcom_cpufreq_probe parse cpu pvs_name\n");
 				drv->names_opp_tables[cpu] = dev_pm_opp_set_prop_name(
 								     cpu_dev,
 								     pvs_name);
@@ -403,6 +413,7 @@ free_genpd_opp:
 	}
 	kfree(drv->genpd_opp_tables);
 free_opp:
+	dev_warn(cpu_dev, "qcom_cpufreq_probe free_oppn");
 	for_each_possible_cpu(cpu) {
 		if (IS_ERR_OR_NULL(drv->names_opp_tables[cpu]))
 			break;

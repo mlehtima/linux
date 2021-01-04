@@ -13,6 +13,8 @@
 
 	aliases {
 		serial0 = &blsp1_uart2;
+		mmc0 = &sdhc_1;
+		mmc1 = &sdhc_2;
 	};
 
 	chosen {
@@ -359,7 +361,7 @@
 		};
 	};
 
-	sdhci@f9824900 {
+	sdhc_1: sdhci@f9824900 {
 		status = "ok";
 
 		vmmc-supply = <&pm8941_l20>;
@@ -372,7 +374,7 @@
 		pinctrl-0 = <&sdhc1_pin_a>;
 	};
 
-	sdhci@f98a4900 {
+	sdhc_2: sdhci@f98a4900 {
 		status = "ok";
 
 		vmmc-supply = <&pm8941_l21>;

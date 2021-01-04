@@ -1021,12 +1021,14 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 
 	if (sock_flag(sk, SOCK_ZAPPED)) {
 		release_sock(sk);
+		printk(KERN_DEBUG "qrtr_recvmsg 2 addr not available\n");
 		return -EADDRNOTAVAIL;
 	}
 
 	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
 				flags & MSG_DONTWAIT, &rc);
 	if (!skb) {
+		printk(KERN_DEBUG "qrtr_recvmsg 3 !skb rc %i\n", rc);
 		release_sock(sk);
 		return rc;
 	}
@@ -1039,10 +1041,12 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
 	}
 
 	rc = skb_copy_datagram_msg(skb, 0, msg, copied);
-	if (rc < 0)
+	if (rc < 0) {
+		printk(KERN_DEBUG "qrtr_recvmsg 4 rc %i\n", rc);
 		goto out;
+	}
 	rc = copied;
-	printk(KERN_DEBUG "qrtr_recvmsg 2 rc %i\n", rc);
+	printk(KERN_DEBUG "qrtr_recvmsg 5 rc %i\n", rc);
 
 	if (addr) {
 		addr->sq_family = AF_QIPCRTR;
@@ -1057,7 +1061,7 @@ out:
 
 	skb_free_datagram(sk, skb);
 	release_sock(sk);
-	printk(KERN_DEBUG "qrtr_recvmsg 3 rc %i\n", rc);
+	printk(KERN_DEBUG "qrtr_recvmsg 6 rc %i\n", rc);
 
 	return rc;
 }
