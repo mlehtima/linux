@@ -60,6 +60,10 @@ static void sync_for_cpu(struct msm_gem_object *msm_obj)
 {
 	struct device *dev = msm_obj->base.dev->dev;
 
+	if (!dev) {
+		pr_info("%s: WTF sync_for_cpu skip\n", __func__);
+		return;
+	}
 	dma_unmap_sgtable(dev, msm_obj->sgt, DMA_BIDIRECTIONAL, 0);
 }
 
