@@ -125,6 +125,11 @@
 #define QDSP6SS_BOOT_CMD                0x404
 #define BOOT_FSM_TIMEOUT                10000
 
+/* External power block headswitch */
+#define EXTERNAL_BHS_ON			BIT(0)
+#define EXTERNAL_BHS_STATUS		BIT(4)
+#define EXTERNAL_BHS_TIMEOUT_US		50
+
 struct reg_info {
 	struct regulator *reg;
 	int uV;
@@ -162,6 +167,7 @@ struct q6v5 {
 
 	void __iomem *reg_base;
 	void __iomem *rmb_base;
+	void __iomem *ext_bhs_base;
 
 	struct regmap *halt_map;
 	struct regmap *conn_map;
@@ -233,6 +239,7 @@ struct q6v5 {
 };
 
 enum {
+	MSS_MSM8226,
 	MSS_MSM8916,
 	MSS_MSM8974,
 	MSS_MSM8996,
@@ -1619,6 +1626,7 @@ static int q6v5_init_mem(struct q6v5 *qproc, struct platform_device *pdev)
 	struct of_phandle_args args;
 	int halt_cell_cnt = 3;
 	int ret;
+	struct resource *res;
 
 	qproc->reg_base = devm_platform_ioremap_resource_byname(pdev, "qdsp6");
 	if (IS_ERR(qproc->reg_base))
@@ -1627,6 +1635,10 @@ static int q6v5_init_mem(struct q6v5 *qproc, struct platform_device *pdev)
 	qproc->rmb_base = devm_platform_ioremap_resource_byname(pdev, "rmb");
 	if (IS_ERR(qproc->rmb_base))
 		return PTR_ERR(qproc->rmb_base);
+
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ext-bhs");
+	if (res)
+		qproc->ext_bhs_base = devm_ioremap_resource(&pdev->dev, res);
 
 	if (qproc->has_vq6)
 		halt_cell_cnt++;
@@ -1787,6 +1799,39 @@ static void q6v5_pds_detach(struct q6v5 *qproc, struct device **pds,
 
 	for (i = 0; i < pd_count; i++)
 		dev_pm_domain_detach(pds[i], false);
+}
+
+static int q6v5_external_bhs_enable(struct q6v5 *qproc)
+{
+	u32 val;
+	int ret = 0;
+
+	/*
+	 * Enable external power block headswitch and wait for it to
+	 * stabilize
+	 */
+	val = readl(qproc->ext_bhs_base);
+	val |= EXTERNAL_BHS_ON;
+	writel(val, qproc->ext_bhs_base);
+
+	ret = readl_poll_timeout(qproc->ext_bhs_base, val,
+				 val & EXTERNAL_BHS_STATUS, 1,
+				 EXTERNAL_BHS_TIMEOUT_US);
+	if (ret) {
+		dev_err(qproc->dev, "External BHS timed out\n");
+		ret = -ETIMEDOUT;
+	}
+
+	return ret;
+}
+
+static void q6v5_external_bhs_disable(struct q6v5 *qproc)
+{
+	u32 val;
+
+	val = readl(qproc->ext_bhs_base);
+	val &= ~EXTERNAL_BHS_ON;
+	writel(val, qproc->ext_bhs_base);
 }
 
 static int q6v5_init_reset(struct q6v5 *qproc)
@@ -1980,6 +2025,14 @@ static int q6v5_probe(struct platform_device *pdev)
 		qproc->proxy_pd_count = ret;
 	}
 
+	if (qproc->ext_bhs_base) {
+		ret = q6v5_external_bhs_enable(qproc);
+		if (ret < 0) {
+			dev_err(&pdev->dev, "Failed to enable external BHS.\n");
+			goto detach_proxy_pds;
+		}
+	}
+
 	qproc->has_alt_reset = desc->has_alt_reset;
 	ret = q6v5_init_reset(qproc);
 	if (ret)
@@ -2043,6 +2096,9 @@ static int q6v5_remove(struct platform_device *pdev)
 	qcom_remove_ssr_subdev(rproc, &qproc->ssr_subdev);
 	qcom_remove_smd_subdev(rproc, &qproc->smd_subdev);
 	qcom_remove_glink_subdev(rproc, &qproc->glink_subdev);
+
+	if (qproc->ext_bhs_base)
+		q6v5_external_bhs_disable(qproc);
 
 	q6v5_pds_detach(qproc, qproc->proxy_pds, qproc->proxy_pd_count);
 
@@ -2310,8 +2366,53 @@ static const struct rproc_hexagon_res msm8974_mss = {
 	.version = MSS_MSM8974,
 };
 
+static const struct rproc_hexagon_res msm8226_mss = {
+	.hexagon_mba_image = "mba.b00",
+	.proxy_supply = (struct qcom_mss_reg_res[]) {
+		{
+			.supply = "pll",
+			.uA = 100000,
+		},
+		{
+			.supply = "mx",
+			.uV = 1050000,
+		},
+		{}
+	},
+	.fallback_proxy_supply = (struct qcom_mss_reg_res[]) {
+		{
+			.supply = "cx",
+			.uA = 100000,
+		},
+		{}
+	},
+	.proxy_clk_names = (char*[]){
+		"xo",
+		NULL
+	},
+	.active_clk_names = (char*[]){
+		"iface",
+		"bus",
+		"mem",
+		NULL
+	},
+	.proxy_pd_names = (char*[]){
+		"cx",
+		NULL
+	},
+	.need_mem_protection = false,
+	.has_alt_reset = false,
+	.has_mba_logs = false,
+	.has_spare_reg = false,
+	.has_qaccept_regs = false,
+	.has_ext_cntl_regs = false,
+	.has_vq6 = false,
+	.version = MSS_MSM8226,
+};
+
 static const struct of_device_id q6v5_of_match[] = {
 	{ .compatible = "qcom,q6v5-pil", .data = &msm8916_mss},
+	{ .compatible = "qcom,msm8226-mss-pil", .data = &msm8226_mss},
 	{ .compatible = "qcom,msm8916-mss-pil", .data = &msm8916_mss},
 	{ .compatible = "qcom,msm8974-mss-pil", .data = &msm8974_mss},
 	{ .compatible = "qcom,msm8996-mss-pil", .data = &msm8996_mss},
