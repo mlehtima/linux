@@ -16007,6 +16007,13 @@ F:	Documentation/devicetree/bindings/hwmon/pwm-fan.txt
 F:	Documentation/hwmon/pwm-fan.rst
 F:	drivers/hwmon/pwm-fan.c
 
+PWM GPIO DRIVER
+M:	Nicola Di Lieto <nicola.dilieto@gmail.com>
+L:	linux-pwm@vger.kernel.org
+S:	Maintained
+F:	Documentation/devicetree/bindings/pwm/pwm-gpio.yaml
+F:	drivers/pwm/pwm-gpio.c
+
 PWM IR Transmitter
 M:	Sean Young <sean@mess.org>
 L:	linux-media@vger.kernel.org
