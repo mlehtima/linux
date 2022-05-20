@@ -244,6 +244,33 @@
 	stride = <(1280 * 3)>;
 };
 
+&pronto {
+	status = "ok";
+
+	power-domains = <&rpmpd MSM8226_VDDCX>,
+			<&rpmpd MSM8226_VDDMX>;
+	power-domain-names = "cx", "mx";
+//	vddcx-supply = <&pm8226_s1>;
+//	vddmx-supply = <&pm8226_l3>;
+	vddpx-supply = <&pm8226_l6>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&wcnss_pin_a>;
+
+	iris {
+		vddxo-supply = <&pm8226_l10>;
+		vddrfa-supply = <&pm8226_l24>;
+		vddpa-supply = <&pm8226_l16>;
+		vdddig-supply = <&pm8226_l24>;
+	};
+
+	smd-edge {
+		wcnss {
+			status = "ok";
+		};
+	};
+};
+
 &rpm_requests {
 	pm8226-regulators {
 		compatible = "qcom,rpm-pm8226-regulators";
@@ -461,6 +488,16 @@
 		function = "gpio";
 		drive-strength = <10>;
 		bias-pull-up;
+	};
+
+	wcnss_pin_a: wcnss-pin-active {
+		wlan {
+			pins =  "gpio40", "gpio41", "gpio42", "gpio43", "gpio44";
+			function = "wlan";
+
+			drive-strength = <6>;
+			bias-pull-down;
+		};
 	};
 };
 
