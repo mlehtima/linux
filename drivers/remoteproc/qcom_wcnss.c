@@ -527,6 +527,7 @@ static int wcnss_probe(struct platform_device *pdev)
 	int ret;
 
 	data = of_device_get_match_data(&pdev->dev);
+	dev_info(&pdev->dev, "wcnss_probe\n");
 
 	if (!qcom_scm_is_available())
 		return -EPROBE_DEFER;

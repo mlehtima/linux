@@ -426,6 +426,7 @@ static int adsp_probe(struct platform_device *pdev)
 	const struct rproc_ops *ops = &adsp_ops;
 	int ret;
 
+	dev_info(&pdev->dev, "adsp_probe\n");
 	desc = of_device_get_match_data(&pdev->dev);
 	if (!desc)
 		return -EINVAL;

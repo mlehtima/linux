@@ -612,6 +612,7 @@ static int rpmpd_probe(struct platform_device *pdev)
 	struct rpmpd **rpmpds;
 	const struct rpmpd_desc *desc;
 
+	dev_info(&pdev->dev, "rpmpd_probe\n");
 	rpm = dev_get_drvdata(pdev->dev.parent);
 	if (!rpm) {
 		dev_err(&pdev->dev, "Unable to retrieve handle to RPM\n");
