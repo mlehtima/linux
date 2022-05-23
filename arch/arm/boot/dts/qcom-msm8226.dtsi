@@ -58,13 +58,44 @@
 		#size-cells = <1>;
 		ranges;
 
+/*
+pil-q6v5-mss fc880000.qcom,mss: mba: loading from 0x0a300000 to 0x0a33c000
+pil-q6v5-mss fc880000.qcom,mss: modem: loading from 0x08400000 to 0x0a300000
+pil-q6v5-lpass fe200000.qcom,lpass: adsp: loading from 0x0d900000 to 0x0f100000
+pil_pronto fb21b000.qcom,pronto: wcnss: loading from 0x0d200000 to 0x0d7ae000
+
+qcom,memblock-remove = <0x08400000 0x2000000
+			0x0cb00000 0x2b00000 // Increase TZ apps region to 6MB (SR #0133393) + 1MB reserved for TIMA logging at 0xd100000
+			0x0fa00000 0x500000>; // Address and Size of Hole
+*/
+
 		smem_region: smem@3000000 {
 			reg = <0x3000000 0x100000>;
 			no-map;
 		};
 
+		mpss_region: mpss@8400000 {
+			reg = <0x08400000 0x1f00000>;
+			no-map;
+		};
+
+		mba_region: mba@a300000 {
+			reg = <0x0a300000 0x100000>;
+			no-map;
+		};
+
 		wcnss_region: wcnss@d200000 {
-			reg = <0x0d200000 0xa00000>;
+			reg = <0x0d200000 0x700000>;
+			no-map;
+		};
+
+		adsp_region: adsp@d900000 {
+			reg = <0x0d900000 0x1800000>;
+			no-map;
+		};
+
+		venus_region: venus@f100000 {
+			reg = <0x0f100000 0x500000>;
 			no-map;
 		};
 	};
