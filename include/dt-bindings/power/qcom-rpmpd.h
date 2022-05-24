@@ -143,6 +143,8 @@
 #define MSM8226_VDDCX		0
 #define MSM8226_VDDCX_AO	1
 #define MSM8226_VDDCX_VFC	2
+#define MSM8226_VDDMX		3
+#define MSM8226_VDDMX_AO	4
 
 /* MSM8939 Power Domains */
 #define MSM8939_VDDMDCX		0
