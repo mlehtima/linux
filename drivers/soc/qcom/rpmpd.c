@@ -142,10 +142,14 @@ static const struct rpmpd_desc mdm9607_desc = {
 DEFINE_RPMPD_PAIR(msm8226, vddcx, vddcx_ao, SMPA, CORNER, 1);
 DEFINE_RPMPD_VFC(msm8226, vddcx_vfc, SMPA, 1);
 
+DEFINE_RPMPD_PAIR(msm8226, vddmx, vddmx_ao, LDOA, CORNER, 3);
+
 static struct rpmpd *msm8226_rpmpds[] = {
 	[MSM8226_VDDCX] =	&msm8226_vddcx,
 	[MSM8226_VDDCX_AO] =	&msm8226_vddcx_ao,
 	[MSM8226_VDDCX_VFC] =	&msm8226_vddcx_vfc,
+	[MSM8226_VDDMX] =	&msm8226_vddmx,
+	[MSM8226_VDDMX_AO] =	&msm8226_vddmx_ao,
 };
 
 static const struct rpmpd_desc msm8226_desc = {
