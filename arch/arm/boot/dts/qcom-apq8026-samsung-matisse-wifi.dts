@@ -9,6 +9,7 @@
 #include "qcom-msm8226.dtsi"
 #include "qcom-pm8226.dtsi"
 
+/delete-node/ &adsp_region;
 /delete-node/ &smem_region;
 /delete-node/ &wcnss_region;
 
@@ -159,7 +160,7 @@
 			no-map;
 		};
 
-		adsp@d900000 {
+		adsp_region: adsp@d900000 {
 			reg = <0x0d900000 0x1800000>;
 			no-map;
 		};
@@ -192,6 +193,10 @@
 			qcom,client-id = <1>;
 		};
 	};
+};
+
+&adsp {
+	status = "okay";
 };
 
 &blsp1_i2c2 {
