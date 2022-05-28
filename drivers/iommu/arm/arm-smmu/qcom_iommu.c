@@ -248,6 +248,16 @@ static void qcom_iommu_reset_ctx(struct qcom_iommu_ctx *ctx)
 	wmb();
 }
 
+static irqreturn_t qcom_iommu_fault2(int irq, void *dev)
+{
+	struct qcom_iommu_dev *qcom_iommu = dev;
+	u32 val;
+
+	val = readl(qcom_iommu->local_base + ARM_SMMU_GR0_sGFSR);
+
+	return IRQ_HANDLED;
+}
+
 static int qcom_iommu_init_domain(struct iommu_domain *domain,
 				  struct qcom_iommu_dev *qcom_iommu,
 				  struct device *dev)
@@ -841,6 +851,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct clk *clk;
 	int ret, num_ctxs, max_asid = 0;
+	int irq;
 
 	/* find the max asid (which is 1:1 to ctx bank idx), so we know how
 	 * many child ctx devices we have:
@@ -903,6 +914,22 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, qcom_iommu);
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0) {
+		dev_err(dev, "failed to get irq\n");
+		return -ENODEV;
+	}
+
+	ret = devm_request_irq(dev, irq,
+			       qcom_iommu_fault2,
+			       IRQF_SHARED,
+			       "qcom-iommu2-fault",
+			       qcom_iommu);
+	if (ret) {
+		dev_err(dev, "failed to request IRQ %u\n", irq);
+		return ret;
+	}
 
 	pm_runtime_enable(dev);
 
