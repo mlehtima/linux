@@ -123,6 +123,10 @@
 	};
 };
 
+&mdp_iommu {
+	status = "okay";
+};
+
 &mdss {
 	status = "okay";
 };
