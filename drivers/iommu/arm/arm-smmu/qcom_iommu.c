@@ -39,6 +39,7 @@ enum qcom_iommu_clk {
 	CLK_IFACE,
 	CLK_BUS,
 	CLK_TBU,
+	CLK_ALT,
 	CLK_NUM,
 };
 
@@ -895,6 +896,13 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 	qcom_iommu->clks[CLK_TBU].clk = clk;
+
+	clk = devm_clk_get_optional(dev, "alt");
+	if (IS_ERR(clk)) {
+		dev_err(dev, "failed to get alt clock\n");
+		return PTR_ERR(clk);
+	}
+	qcom_iommu->clks[CLK_ALT].clk = clk;
 
 	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
 				 &qcom_iommu->sec_id)) {
