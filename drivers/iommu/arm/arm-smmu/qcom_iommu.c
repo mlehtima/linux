@@ -54,6 +54,7 @@ struct qcom_iommu_dev {
 	u32			 sec_id;
 	u8			 num_ctxs;
 	bool			 use_aarch64_pt;
+	bool			 halt_enabled;
 	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
 };
 
@@ -232,6 +233,37 @@ static irqreturn_t qcom_iommu_fault(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+static void qcom_iommu_halt(struct qcom_iommu_dev *qcom_iommu)
+{
+	u32 val;
+	int ret;
+
+	if (!qcom_iommu->halt_enabled) {
+		return;
+	}
+
+	val = readl(qcom_iommu->local_base + 0x2000);
+	val |= BIT(2);
+	writel(val, qcom_iommu->local_base + 0x2000);
+
+	ret = readl_poll_timeout(qcom_iommu->local_base + 0x2000, val, val & BIT(3), 1, 5000000);
+	if (ret)
+		dev_err(qcom_iommu->dev, "failed to halt bus\n");
+}
+
+static void qcom_iommu_unhalt(struct qcom_iommu_dev *qcom_iommu)
+{
+	u32 val;
+
+	if (!qcom_iommu->halt_enabled) {
+		return;
+	}
+
+	val = readl(qcom_iommu->local_base + 0x2000);
+	val &= ~BIT(2);
+	writel(val, qcom_iommu->local_base + 0x2000);
+}
+
 static void qcom_iommu_reset_ctx(struct qcom_iommu_ctx *ctx)
 {
 	iommu_writel(ctx, ARM_SMMU_CB_FAR, 0);
@@ -327,6 +359,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 			break;
 		}
 
+		qcom_iommu_halt(qcom_iommu);
+
 		qcom_iommu_reset_ctx(ctx);
 
 
@@ -373,6 +407,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
 
 		ctx->domain = domain;
+
+		qcom_iommu_unhalt(qcom_iommu);
 	}
 
 	mutex_unlock(&qcom_domain->init_mutex);
@@ -903,6 +939,9 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 	qcom_iommu->clks[CLK_ALT].clk = clk;
+
+	if (of_property_read_bool(dev->of_node, "qcom,halt-enabled"))
+		qcom_iommu->halt_enabled = true;
 
 	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
 				 &qcom_iommu->sec_id)) {
