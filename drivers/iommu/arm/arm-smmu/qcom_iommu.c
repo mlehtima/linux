@@ -291,6 +291,72 @@ static irqreturn_t qcom_iommu_fault2(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+static void qcom_iommu_reset(struct qcom_iommu_dev *qcom_iommu)
+{
+	int smrs;
+	u32 reg;
+	int i;
+
+	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_sACR);
+	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_CR2);
+	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_GFAR);
+	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_GFSRRESTORE);
+	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_TLBIALLNSNH);
+
+	reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_ID0);
+	smrs = reg & ARM_SMMU_ID0_NUMSMRG;
+	for (i = 0; i < smrs; i++)
+		writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
+}
+
+static void qcom_iommu_non_secure_init(struct qcom_iommu_dev *qcom_iommu)
+{
+	int smrs;
+	u32 reg;
+	int i;
+
+	// Reset iommu
+	qcom_iommu_reset(qcom_iommu);
+
+	// m2v tables FIXME
+	reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_ID0);
+	smrs = reg & ARM_SMMU_ID0_NUMSMRG;
+	//FIXME 3 -> sids
+	for (i = 0; i < 3; i++) {
+		reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
+		writel(ARM_SMMU_SMR_VALID | i, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
+
+		writel(3 << 18 | 0x0a << 12 | i, qcom_iommu->local_base + ARM_SMMU_GR0_S2CR(i));
+	}
+
+	reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_sCR0);
+
+	/* Enable fault reporting */
+	reg = (ARM_SMMU_sCR0_GCFGFIE | ARM_SMMU_sCR0_GCFGFRE |
+			ARM_SMMU_sCR0_GFIE | ARM_SMMU_sCR0_GFRE);
+
+	/* Enable client access, handling unmatched streams as appropriate */
+	reg &= ~ARM_SMMU_sCR0_CLIENTPD;
+	reg |= ARM_SMMU_sCR0_USFCFG;
+
+	reg |= ARM_SMMU_sCR0_SMCFCFG | ARM_SMMU_sCR0_STALLD;
+
+	writel(reg, qcom_iommu->local_base + ARM_SMMU_GR0_sCR0);
+}
+
+static void qcom_iommu_release_smg(struct qcom_iommu_dev *qcom_iommu)
+{
+	int smrs;
+	u32 reg;
+	int i;
+
+	reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_ID0);
+	smrs = reg & ARM_SMMU_ID0_NUMSMRG;
+
+	for (; i < smrs; i++)
+		writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
+}
+
 static int qcom_iommu_init_domain(struct iommu_domain *domain,
 				  struct qcom_iommu_dev *qcom_iommu,
 				  struct device *dev)
@@ -308,7 +374,12 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 	if (qcom_domain->iommu)
 		goto out_unlock;
 
-	if (qcom_iommu->use_aarch64_pt) {
+	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
+	    !IS_ENABLED(CONFIG_64BIT)) {
+		pgtbl_fmt = ARM_V7S;
+		ias = 32;
+		oas = 32;
+	} else if (qcom_iommu->use_aarch64_pt) {
 		pgtbl_fmt = ARM_64_LPAE_S1;
 		ias = oas = 48;
 	} else {
@@ -345,13 +416,21 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 		u32 tcr[2];
 
 		if (!ctx->secure_init) {
-			ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
-			if (ret) {
-				dev_err(qcom_iommu->dev, "secure init failed: %d\n", ret);
-				goto out_clear_iommu;
+			if (qcom_iommu->sec_id) {
+				ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
+				if (ret) {
+					dev_err(qcom_iommu->dev, "secure init failed: %d\n", ret);
+					goto out_clear_iommu;
+				}
+			} else {
+				qcom_iommu_halt(qcom_iommu);
+				qcom_iommu_non_secure_init(qcom_iommu);
+				qcom_iommu_unhalt(qcom_iommu);
 			}
 			ctx->secure_init = true;
 		}
+
+		qcom_iommu_halt(qcom_iommu);
 
 		/* Secured QSMMU-500/QSMMU-v2 contexts cannot be programmed */
 		if (ctx->secured_ctx) {
@@ -383,6 +462,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 		iommu_writel(ctx, ARM_SMMU_CB_TCR2, tcr[1]);
 		iommu_writel(ctx, ARM_SMMU_CB_TCR, tcr[0]);
 
+#ifndef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
 		/* TTBRs */
 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
@@ -394,12 +474,47 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 				pgtbl_cfg.arm_lpae_s1_cfg.mair);
 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
 				pgtbl_cfg.arm_lpae_s1_cfg.mair >> 32);
+#else
+		/* TTBRs */
+		iommu_writel(ctx, ARM_SMMU_CB_TTBR0,
+				pgtbl_cfg.arm_v7s_cfg.ttbr);
+		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
+
+		iommu_writel(ctx, ARM_SMMU_CB_CONTEXTIDR, ctx->asid);
+
+		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
+				pgtbl_cfg.arm_v7s_cfg.prrr);
+		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
+				pgtbl_cfg.arm_v7s_cfg.nmrr);
+#endif
+
+		if (!qcom_iommu->sec_id) {
+			/* Stage 1 Context with Stage 2 bypass */
+			reg = FIELD_PREP(ARM_SMMU_CBAR_TYPE, CBAR_TYPE_S1_TRANS_S2_BYPASS);
+
+			/* Route page faults to the non-secure interrupt */
+			reg |= FIELD_PREP(ARM_SMMU_CBAR_IRPTNDX, 1);
+
+			/* Set VMID to non-secure HLOS */
+			reg |= FIELD_PREP(ARM_SMMU_CBAR_VMID, 3);
+
+			/* Bypass is treated as inner-shareable */
+			reg |= FIELD_PREP(ARM_SMMU_CBAR_S1_BPSHCFG, 2);
+
+			/* Do not downgrade memory attributes */
+			reg |= FIELD_PREP(ARM_SMMU_CBAR_S1_MEMATTR, 0x0a);
+
+			writel(reg, qcom_iommu->local_base + 0x1000 + ARM_SMMU_GR1_CBAR(i));
+		}
 
 		/* SCTLR */
-		reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE |
-		      ARM_SMMU_SCTLR_AFE | ARM_SMMU_SCTLR_TRE |
-		      ARM_SMMU_SCTLR_M | ARM_SMMU_SCTLR_S1_ASIDPNE |
-		      ARM_SMMU_SCTLR_CFCFG;
+		reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_TRE |
+				ARM_SMMU_SCTLR_S1_ASIDPNE | ARM_SMMU_SCTLR_M;
+
+#ifndef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
+		reg |= ARM_SMMU_SCTLR_CFRE | ARM_SMMU_SCTLR_AFE |
+				ARM_SMMU_SCTLR_CFCFG;
+#endif
 
 		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 			reg |= ARM_SMMU_SCTLR_E;
@@ -517,6 +632,13 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
 
 		ctx->domain = NULL;
 	}
+
+	if (!qcom_iommu->sec_id) {
+		qcom_iommu_halt(qcom_iommu);
+		qcom_iommu_release_smg(qcom_iommu);
+		qcom_iommu_unhalt(qcom_iommu);
+	}
+
 	pm_runtime_put_sync(qcom_iommu->dev);
 }
 
@@ -943,9 +1065,10 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 	if (of_property_read_bool(dev->of_node, "qcom,halt-enabled"))
 		qcom_iommu->halt_enabled = true;
 
-	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
-				 &qcom_iommu->sec_id)) {
-		dev_err(dev, "missing qcom,iommu-secure-id property\n");
+	ret = of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
+	                           &qcom_iommu->sec_id);
+	if (ret && ret != -EINVAL) {
+		dev_err(dev, "invalid qcom,iommu-secure-id property\n");
 		return -ENODEV;
 	}
 
@@ -1002,11 +1125,13 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 
 	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
 
+#ifndef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
 	if (qcom_iommu->local_base) {
 		pm_runtime_get_sync(dev);
 		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
 		pm_runtime_put_sync(dev);
 	}
+#endif
 
 	return 0;
 
