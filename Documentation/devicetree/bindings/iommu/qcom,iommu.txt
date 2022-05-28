@@ -51,6 +51,7 @@ to non-secure vs secure interrupt line.
 - qcom,ctx-num     : The number associated to the context bank
 - qcom,use-aarch64-pagetables : Switch to AArch64 pagetable format on all
                                 contexts declared in this IOMMU
+- qcom,halt-enabled : Enable halting IOMMU before some register writes
 
 
 ** Examples:
