@@ -131,7 +131,7 @@ static int btqcomsmd_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 		return ret;
 
 	/* The firmware stops responding for a while after setting the bdaddr,
-	 * causing timeouts for subsequent commands. Sleep a bit to avoid this.
+	 * causing timeouts for subsequent commands. Sleep for >1ms to be safe.
 	 */
 	usleep_range(1000, 10000);
 	return 0;
