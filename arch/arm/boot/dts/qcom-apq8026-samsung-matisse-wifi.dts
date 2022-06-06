@@ -246,6 +246,10 @@
 	};
 };
 
+&cci {
+	status = "okay";
+};
+
 &pronto {
 	status = "okay";
 
