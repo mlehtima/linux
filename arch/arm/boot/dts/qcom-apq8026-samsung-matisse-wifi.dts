@@ -224,6 +224,10 @@
 	};
 };
 
+&cci {
+	status = "okay";
+};
+
 &rpm_requests {
 	regulators {
 		compatible = "qcom,rpm-pm8226-regulators";
