@@ -10,6 +10,7 @@ on the Qualcomm Hexagon core.
 		    "qcom,q6v5-pil",
 		    "qcom,ipq8074-wcss-pil"
 		    "qcom,qcs404-wcss-pil"
+		    "qcom,msm8226-mss-pil",
 		    "qcom,msm8916-mss-pil",
 		    "qcom,msm8974-mss-pil"
 		    "qcom,msm8996-mss-pil"
@@ -23,6 +24,9 @@ on the Qualcomm Hexagon core.
 	Value type: <prop-encoded-array>
 	Definition: must specify the base address and size of the qdsp6 and
 		    rmb register blocks
+	qcom,msm8226-mss-pil:
+		    must specify the base address and size of the ext-bhs
+		    register block
 
 - reg-names:
 	Usage: required
@@ -42,6 +46,7 @@ on the Qualcomm Hexagon core.
 	qcom,q6v5-pil:
 	qcom,ipq8074-wcss-pil:
 	qcom,qcs404-wcss-pil:
+	qcom,msm8226-mss-pil:
 	qcom,msm8916-mss-pil:
 	qcom,msm8974-mss-pil:
 		    must be "wdog", "fatal", "ready", "handover", "stop-ack"
@@ -77,6 +82,7 @@ on the Qualcomm Hexagon core.
 		    "lcc_abhs_cbc", "lcc_tcm_slave_cbc", "lcc_abhm_cbc",
 		    "lcc_axim_cbc", "lcc_bcr_sleep"
 	qcom,q6v5-pil:
+	qcom,msm8226-mss-pil:
 	qcom,msm8916-mss-pil:
 	qcom,msm8974-mss-pil:
 		    must be "iface", "bus", "mem", "xo"
@@ -120,6 +126,16 @@ should be referenced as follows:
 	Value type: <phandle>
 	Definition: reference to the reserved-memory for the mba region followed
 		    by the mpss region
+
+For the compatible string below the following supplies are required:
+  "qcom,msm8226-mss-pil"
+- cx-supply: (deprecated, use power domain instead)
+- mx-supply:
+- pll-supply:
+	Usage: required
+	Value type: <phandle>
+	Definition: reference to the regulators to be held on behalf of the
+		    booting of the Hexagon core
 
 For the compatible strings below the following supplies are required:
   "qcom,q6v5-pil"
@@ -170,6 +186,8 @@ For the compatible string below the following supplies are required:
 	Definition: The power-domains needed depend on the compatible string:
 	qcom,ipq8074-wcss-pil:
 		    no power-domain names required
+	qcom,msm8226-mss-pil:
+		    must be "cx"
 	qcom,q6v5-pil:
 	qcom,msm8916-mss-pil:
 	qcom,msm8974-mss-pil:
