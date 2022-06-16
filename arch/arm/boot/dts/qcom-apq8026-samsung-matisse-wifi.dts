@@ -26,6 +26,14 @@
 		display0 = &framebuffer0;
 	};
 
+	backlight_pwm: pwm {
+		compatible = "clk-pwm";
+		#pwm-cells = <2>;
+		clocks = <&mmcc CAMSS_GP0_CLK>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&backlight_pwm_default_state>;
+	};
+
 	chosen {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -80,6 +88,46 @@
 			gpios = <&tlmm 106 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_VOLUMEUP>;
 			debounce-interval = <15>;
+		};
+	};
+
+	i2c-backlight {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&backlight_i2c_default_state>;
+
+		i2c-gpio,delay-us = <4>;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		backlight@2c {
+			compatible = "ti,lp8556";
+			reg = <0x2c>;
+
+			bl-name = "lcd-bl";
+			dev-ctrl = /bits/ 8 <0x80>;
+			init-brt = /bits/ 8 <0x10>;
+			pwm-period = <100000>;
+
+			pwms = <&backlight_pwm 0 100000>;
+			pwm-names = "lp8556";
+
+			rom_a0h {
+				rom-addr = /bits/ 8 <0xa0>;
+				rom-val = /bits/ 8 <0x44>;
+			};
+			rom_a1h {
+				rom-addr = /bits/ 8 <0xa1>;
+				rom-val = /bits/ 8 <0x6c>;
+			};
+			rom_a5h {
+				rom-addr = /bits/ 8 <0xa5>;
+				rom-val = /bits/ 8 <0x24>;
+			};
 		};
 	};
 
@@ -468,6 +516,18 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
+	};
+
+	backlight_i2c_default_state: backlight-i2c-default-state {
+		pins = "gpio20", "gpio21";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	backlight_pwm_default_state: backlight-pwm-default-state {
+		pins = "gpio33";
+		function = "gp0_clk";
 	};
 
 	muic_i2c_default_state: muic-i2c-default-state {
