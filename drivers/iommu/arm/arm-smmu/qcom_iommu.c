@@ -963,18 +963,21 @@ static int qcom_iommu_non_secure_init(struct qcom_iommu_dev *qcom_iommu)
 	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_GFAR);
 	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_GFSRRESTORE);
 	writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_TLBIALLNSNH);
-	writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
+//	writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
 
 	reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_ID0);
 	smrs = reg & ARM_SMMU_ID0_NUMSMRG;
+
+	printk("qcom_iommu_non_secure_init\n");
+	for (i = 0; i < smrs; i++)
+		writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
+
 	for (i = 0; i < 3; i++) {
 		reg = readl(qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
 		writel(ARM_SMMU_SMR_VALID | i, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
 
 		writel(3 << 18 | 0x0a << 12 | i, qcom_iommu->local_base + ARM_SMMU_GR0_S2CR(i));
 	}
-	for (; i < smrs; i++)
-		writel(0, qcom_iommu->local_base + ARM_SMMU_GR0_SMR(i));
 
 	/* Enable fault reporting */
 	reg = (ARM_SMMU_sCR0_GFRE | ARM_SMMU_sCR0_GFIE |
