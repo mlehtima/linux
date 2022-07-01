@@ -166,6 +166,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		 * need to
 		 */
 		/* Enable 1k sort: */
+		printk("adreno_is_a330v2\n");
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT, 0x0001003f);
 		gpu_write(gpu, REG_A3XX_VBIF_ABIT_SORT_CONF, 0x000000a4);
 		/* Enable WR-REQ: */
@@ -175,6 +176,7 @@ static int a3xx_hw_init(struct msm_gpu *gpu)
 		gpu_write(gpu, REG_A3XX_VBIF_ROUND_ROBIN_QOS_ARB, 0x0003);
 
 	} else if (adreno_is_a330(adreno_gpu)) {
+		printk("adreno_is_a330\n");
 		/* Set up 16 deep read/write request queues: */
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF0, 0x18181818);
 		gpu_write(gpu, REG_A3XX_VBIF_IN_RD_LIM_CONF1, 0x18181818);

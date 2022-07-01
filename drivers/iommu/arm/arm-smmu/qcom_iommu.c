@@ -212,6 +212,7 @@ static irqreturn_t qcom_iommu_fault(int irq, void *dev)
 	struct qcom_iommu_ctx *ctx = dev;
 	u32 fsr, fsynr;
 	u64 iova;
+	printk("qcom_iommu_fault\n");
 
 	fsr = iommu_readl(ctx, ARM_SMMU_CB_FSR);
 
@@ -238,6 +239,7 @@ static irqreturn_t qcom_iommu_fault2(int irq, void *dev)
 {
 	struct qcom_iommu_dev *qcom_iommu = dev;
 	u32 val;
+	printk("qcom_iommu_fault2\n");
 
 	val = readl(qcom_iommu->local_base + ARM_SMMU_GR0_sGFSR);
 
