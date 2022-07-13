@@ -220,6 +220,13 @@
 		compatible = "atmel,maxtouch";
 		reg = <0x4a>;
 
+		atmel,key-buttons = <KEY_RESERVED>,
+				    <KEY_RESERVED>,
+				    <KEY_RESERVED>,
+				    <KEY_RESERVED>,
+				    <KEY_MENU>,
+				    <KEY_BACK>;
+
 		interrupt-parent = <&tlmm>;
 		interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
 
