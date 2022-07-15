@@ -60,6 +60,22 @@ properties:
       or experiment to determine which bit corresponds to which input. Use
       KEY_RESERVED for unused padding values.
 
+  atmel,key-buttons:
+    $ref: /schemas/types.yaml#/definitions/uint32-array
+    description: |
+      When enabled, the T15 key array object sends messages
+      on bit changes. An array of up to 8 entries can be provided
+      indicating the Linux keycode mapped to each bit of the status byte,
+      starting at the LSB. Linux keycodes are defined in
+      <dt-bindings/input/input.h>.
+
+      Note: the numbering of the touch keys and the bit they start at varies
+      between maXTouch devices. You must either refer to the documentation,
+      or experiment to determine which bit corresponds to which input. Use
+      KEY_RESERVED for unused padding values.
+    minItems: 1
+    maxItems: 8
+
   atmel,wakeup-method:
     $ref: /schemas/types.yaml#/definitions/uint32
     description: |
