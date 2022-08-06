@@ -29,6 +29,7 @@ properties:
         items:
           - enum:
               - qcom,mdm9607-tsens
+              - qcom,msm8226-tsens
               - qcom,msm8916-tsens
               - qcom,msm8939-tsens
               - qcom,msm8974-tsens
@@ -87,6 +88,7 @@ properties:
     items:
       - const: calib
       - enum:
+          - calib2
           - calib_backup
           - calib_sel
 
@@ -118,6 +120,7 @@ allOf:
             enum:
               - qcom,ipq8064-tsens
               - qcom,mdm9607-tsens
+              - qcom,msm8226-tsens
               - qcom,msm8916-tsens
               - qcom,msm8960-tsens
               - qcom,msm8974-tsens
