@@ -15,6 +15,47 @@
 #define TM_Sn_STATUS_OFF			0x0030
 #define TM_TRDY_OFF				0x005c
 
+/* eeprom layout data for 8226 */
+#define MSM8226_BASE0_MASK	0x001fe000
+#define MSM8226_BASE1_MASK	0x000000ff
+#define MSM8226_BASE0_SHIFT	13
+#define MSM8226_BASE1_SHIFT	0
+
+#define MSM8226_S0_P1_MASK	0x07e00000
+#define MSM8226_S1_P1_MASK	0x0000003f
+#define MSM8226_S2_P1_MASK	0x00000fc0
+#define MSM8226_S3_P1_MASK	0x0003f000
+#define MSM8226_S4_P1_MASK	0x00fc0000
+#define MSM8226_S5_P1_MASK	0x3f000000
+#define MSM8226_S6_P1_MASK	0x03f00000
+
+#define MSM8226_S0_P2_MASK	0x00003f00
+#define MSM8226_S1_P2_MASK	0x000fc000
+#define MSM8226_S2_P2_MASK	0x03f00000
+#define MSM8226_S3_P2_MASK	0xfc000000
+#define MSM8226_S4_P2_MASK	0x03f00000
+#define MSM8226_S5_P2_MASK	0xfc000000
+#define MSM8226_S6_P2_MASK	0x007e0000
+
+#define MSM8226_S0_P1_SHIFT	21
+#define MSM8226_S1_P1_SHIFT	0
+#define MSM8226_S2_P1_SHIFT	6
+#define MSM8226_S3_P1_SHIFT	12
+#define MSM8226_S4_P1_SHIFT	18
+#define MSM8226_S5_P1_SHIFT	24
+#define MSM8226_S6_P1_SHIFT	20
+
+#define MSM8226_S0_P2_SHIFT	8
+#define MSM8226_S1_P2_SHIFT	14
+#define MSM8226_S2_P2_SHIFT	20
+#define MSM8226_S3_P2_SHIFT	26
+#define MSM8226_S4_P2_SHIFT	20
+#define MSM8226_S5_P2_SHIFT	26
+#define MSM8226_S6_P2_SHIFT	17
+
+#define MSM8226_CAL_SEL_MASK	0xe0000000
+#define MSM8226_CAL_SEL_SHIFT	29
+
 /* eeprom layout data for 8916 */
 #define MSM8916_BASE0_MASK	0x0000007f
 #define MSM8916_BASE1_MASK	0xfe000000
@@ -222,6 +263,78 @@
 
 #define MDM9607_CAL_SEL_MASK	0x00700000
 #define MDM9607_CAL_SEL_SHIFT	20
+
+static int calibrate_8226(struct tsens_priv *priv)
+{
+	int base0 = 0, base1 = 0, i;
+	u32 p1[7], p2[7];
+	int mode = 0;
+	u32 *qfprom_cdata, *qfprom_cdata2;
+	u32 cdata[6];
+
+	qfprom_cdata = (u32 *)qfprom_read(priv->dev, "calib");
+	if (IS_ERR(qfprom_cdata))
+		return PTR_ERR(qfprom_cdata);
+
+	qfprom_cdata2 = (u32 *)qfprom_read(priv->dev, "calib2");
+	if (IS_ERR(qfprom_cdata2))
+		return PTR_ERR(qfprom_cdata2);
+
+	/* Mapping between qfprom nvmem and calibration data */
+	cdata[0] = qfprom_cdata[0];
+	cdata[1] = qfprom_cdata[1];
+	cdata[2] = qfprom_cdata[2];
+	cdata[3] = qfprom_cdata[3];
+	cdata[4] = qfprom_cdata2[0];
+	cdata[5] = qfprom_cdata2[2];
+
+	mode = (cdata[5] & MSM8226_CAL_SEL_MASK) >> MSM8226_CAL_SEL_SHIFT;
+	dev_dbg(priv->dev, "calibration mode is %d\n", mode);
+
+	switch (mode) {
+	case TWO_PT_CALIB:
+		base1 = (cdata[3] & MSM8226_BASE1_MASK) >> MSM8226_BASE1_SHIFT;
+		p2[0] = (cdata[3] & MSM8226_S0_P2_MASK) >> MSM8226_S0_P2_SHIFT;
+		p2[1] = (cdata[3] & MSM8226_S1_P2_MASK) >> MSM8226_S1_P2_SHIFT;
+		p2[2] = (cdata[3] & MSM8226_S2_P2_MASK) >> MSM8226_S2_P2_SHIFT;
+		p2[3] = (cdata[3] & MSM8226_S3_P2_MASK) >> MSM8226_S3_P2_SHIFT;
+		p2[4] = (cdata[4] & MSM8226_S4_P2_MASK) >> MSM8226_S4_P2_SHIFT;
+		p2[5] = (cdata[4] & MSM8226_S5_P2_MASK) >> MSM8226_S5_P2_SHIFT;
+		p2[6] = (cdata[5] & MSM8226_S6_P2_MASK) >> MSM8226_S6_P2_SHIFT;
+		for (i = 0; i < priv->num_sensors; i++)
+			p2[i] = ((base1 + p2[i]) << 2) | BIT_APPEND;
+		fallthrough;
+	case ONE_PT_CALIB2:
+		base0 = (cdata[0] & MSM8226_BASE0_MASK) >> MSM8226_BASE0_SHIFT;
+		p1[0] = (cdata[0] & MSM8226_S0_P1_MASK) >> MSM8226_S0_P1_SHIFT;
+		p1[1] = (cdata[1] & MSM8226_S1_P1_MASK) >> MSM8226_S1_P1_SHIFT;
+		p1[2] = (cdata[1] & MSM8226_S2_P1_MASK) >> MSM8226_S2_P1_SHIFT;
+		p1[3] = (cdata[1] & MSM8226_S3_P1_MASK) >> MSM8226_S3_P1_SHIFT;
+		p1[4] = (cdata[1] & MSM8226_S4_P1_MASK) >> MSM8226_S4_P1_SHIFT;
+		p1[5] = (cdata[1] & MSM8226_S5_P1_MASK) >> MSM8226_S5_P1_SHIFT;
+		p1[6] = (cdata[2] & MSM8226_S6_P1_MASK) >> MSM8226_S6_P1_SHIFT;
+		for (i = 0; i < priv->num_sensors; i++)
+			p1[i] = (((base0) + p1[i]) << 2) | BIT_APPEND;
+		break;
+	default:
+		for (i = 0; i < priv->num_sensors; i++)
+			p2[i] = 780;
+		p1[0] = 595;
+		p1[1] = 625;
+		p1[2] = 553;
+		p1[3] = 578;
+		p1[4] = 505;
+		p1[5] = 509;
+		p1[6] = 507;
+		break;
+	}
+
+	compute_intercept_slope(priv, p1, p2, mode);
+	kfree(qfprom_cdata);
+	kfree(qfprom_cdata2);
+
+	return 0;
+}
 
 static int calibrate_8916(struct tsens_priv *priv)
 {
@@ -578,6 +691,19 @@ static const struct reg_field tsens_v0_1_regfields[MAX_REGFIELDS] = {
 
 	/* TRDY: 1=ready, 0=in progress */
 	[TRDY] = REG_FIELD(TM_TRDY_OFF, 0, 0),
+};
+
+static const struct tsens_ops ops_8226 = {
+	.init		= init_common,
+	.calibrate	= calibrate_8226,
+	.get_temp	= get_temp_common,
+};
+
+struct tsens_plat_data data_8226 = {
+	.num_sensors	= 7,
+	.ops		= &ops_8226,
+	.feat		= &tsens_v0_1_feat,
+	.fields	= tsens_v0_1_regfields,
 };
 
 static const struct tsens_ops ops_8916 = {
