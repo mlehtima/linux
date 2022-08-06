@@ -132,6 +132,28 @@
 		};
 	};
 
+	i2c-ir-transmitter {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 4 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 5 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&ir_transmitter_i2c_default_state>;
+
+		i2c-gpio,delay-us = <2>;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+/*
+		backlight@50 {
+			compatible = "ti,lp8556";
+			reg = <0x50>;
+		};
+*/
+	};
+
+
 	i2c-muic {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 14 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -546,6 +568,13 @@
 	backlight_pwm_default_state: backlight-pwm-default-state {
 		pins = "gpio33";
 		function = "gp0_clk";
+	};
+
+	ir_transmitter_i2c_default_state: ir-transmitter-i2c-default-state {
+		pins = "gpio4", "gpio5";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
 	};
 
 	muic_i2c_default_state: muic-i2c-default-state {
