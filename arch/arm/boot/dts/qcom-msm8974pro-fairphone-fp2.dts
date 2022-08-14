@@ -76,7 +76,7 @@
 	status = "okay";
 };
 
-&gpu_opp_tables {
+&gpu_opp_table {
 	status = "ok";
 };
 
@@ -128,7 +128,7 @@
 	};
 };
 
-&dsi0-phy {
+&dsi0_phy {
 	status = "ok";
 
 	vddio-supply = <&pm8941_l12>;
