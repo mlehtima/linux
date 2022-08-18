@@ -1666,14 +1666,14 @@
 			iommu-ctx@2000 {
 				compatible = "qcom,msm-iommu-v1-sec";
 				reg = <0x2000 0x1000>;
-				interrupts = <GIC_SPI 46 0>;
+				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
 			};
 
 			// mdp_2
 			iommu-ctx@3000 {
 				compatible = "qcom,msm-iommu-v1-sec";
 				reg = <0x3000 0x1000>;
-				interrupts = <GIC_SPI 46 0>;
+				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
 
@@ -1714,14 +1714,14 @@
 			kgsl-ctx@2000 {
 				compatible = "qcom,msm-iommu-v1-ns";
 				reg = <0x2000 0x1000>;
-				interrupts = <GIC_SPI 241 0>;
+				interrupts = <GIC_SPI 241 IRQ_TYPE_LEVEL_HIGH>;
 			};
 
 			// gfx3d_spare:
 			kgsl-ctx@3000 {
 				compatible = "qcom,msm-iommu-v1-ns";
 				reg = <0x3000 0x1000>;
-				interrupts = <GIC_SPI 241 0>;
+				interrupts = <GIC_SPI 241 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
 
