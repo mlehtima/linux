@@ -879,6 +879,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return -ENODEV;
 
+	dev_err(dev, "%s() 2\n", __func__);
 	/* clear IRQs before registering fault handler, just in case the
 	 * boot-loader left us a surprise:
 	 */
@@ -902,7 +903,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
 
 	ctx->asid = ret;
 
-	dev_dbg(dev, "found asid %u\n", ctx->asid);
+	dev_err(dev, "found asid %u\n", ctx->asid);
 
 	qcom_iommu->ctxs[ctx->asid - 1] = ctx;
 
@@ -1140,6 +1141,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, qcom_iommu);
 
+/*
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		dev_err(dev, "failed to get irq\n");
@@ -1155,7 +1157,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to request IRQ %u\n", irq);
 		return ret;
 	}
-
+*/
 	pm_runtime_enable(dev);
 
 	/* register context bank devices, which are child nodes: */
