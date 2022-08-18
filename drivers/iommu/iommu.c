@@ -2086,10 +2086,13 @@ static int __iommu_attach_group(struct iommu_domain *domain,
 {
 	int ret;
 
-	if (group->domain && group->domain != group->default_domain &&
+printk("__iommu_attach_group d %pK dd %pK bd %pK\n", group->domain, group->default_domain, group->blocking_domain);
+	if (group->domain && group->default_domain && group->blocking_domain &&
+	    group->domain != group->default_domain &&
 	    group->domain != group->blocking_domain)
 		return -EBUSY;
 
+printk("__iommu_attach_group\n");
 	ret = __iommu_group_for_each_dev(group, domain,
 					 iommu_group_do_attach_device);
 	if (ret == 0)
