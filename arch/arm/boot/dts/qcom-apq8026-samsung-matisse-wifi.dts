@@ -133,7 +133,8 @@
 			no-map;
 		};
 
-		adsp@d900000 {
+		/delete-node/ adsp@dc00000;
+		adsp_region: adsp@d900000 {
 			reg = <0x0d900000 0x1800000>;
 			no-map;
 		};
@@ -167,6 +168,10 @@
 			qcom,client-id = <1>;
 		};
 	};
+};
+
+&adsp {
+	status = "okay";
 };
 
 &blsp1_i2c2 {
