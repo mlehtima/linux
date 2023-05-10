@@ -978,6 +978,18 @@
 			compatible = "qcom,msm8226-smp";
 			reg = <0xf90b8000 0x1000>;
 		};
+
+		imem: imem@fe805000 {
+			compatible = "syscon", "simple-mfd";
+			reg = <0xfe805000 0x1000>;
+
+			status = "disabled";
+
+			reboot-mode {
+				compatible = "syscon-reboot-mode";
+				offset = <0x65c>;
+			};
+		};
 	};
 
 	thermal-zones {
