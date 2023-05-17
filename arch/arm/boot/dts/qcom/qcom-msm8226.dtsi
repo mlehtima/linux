@@ -253,8 +253,8 @@
 				 <&gcc GCC_SDCC1_APPS_CLK>,
 				 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "iface", "core", "xo";
-			pinctrl-names = "default";
 			pinctrl-0 = <&sdhc1_default_state>;
+			pinctrl-names = "default";
 			status = "disabled";
 		};
 
@@ -269,8 +269,8 @@
 				 <&gcc GCC_SDCC3_APPS_CLK>,
 				 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "iface", "core", "xo";
-			pinctrl-names = "default";
 			pinctrl-0 = <&sdhc3_default_state>;
+			pinctrl-names = "default";
 			status = "disabled";
 		};
 
@@ -285,8 +285,8 @@
 				 <&gcc GCC_SDCC2_APPS_CLK>,
 				 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "iface", "core", "xo";
-			pinctrl-names = "default";
 			pinctrl-0 = <&sdhc2_default_state>;
+			pinctrl-names = "default";
 			status = "disabled";
 		};
 
@@ -334,8 +334,8 @@
 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
 			clock-names = "core", "iface";
-			pinctrl-names = "default";
 			pinctrl-0 = <&blsp1_i2c1_pins>;
+			pinctrl-names = "default";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
@@ -347,8 +347,8 @@
 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
 			clock-names = "core", "iface";
-			pinctrl-names = "default";
 			pinctrl-0 = <&blsp1_i2c2_pins>;
+			pinctrl-names = "default";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
@@ -360,8 +360,8 @@
 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
 			clock-names = "core", "iface";
-			pinctrl-names = "default";
 			pinctrl-0 = <&blsp1_i2c3_pins>;
+			pinctrl-names = "default";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
@@ -373,8 +373,8 @@
 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
 			clock-names = "core", "iface";
-			pinctrl-names = "default";
 			pinctrl-0 = <&blsp1_i2c4_pins>;
+			pinctrl-names = "default";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
@@ -386,8 +386,8 @@
 			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
 			clock-names = "core", "iface";
-			pinctrl-names = "default";
 			pinctrl-0 = <&blsp1_i2c5_pins>;
+			pinctrl-names = "default";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "disabled";
@@ -927,9 +927,9 @@
 				      "cci_ahb",
 				      "cci";
 
-			pinctrl-names = "default", "sleep";
 			pinctrl-0 = <&cci_default>;
 			pinctrl-1 = <&cci_sleep>;
+			pinctrl-names = "default", "sleep";
 
 			status = "disabled";
 
