@@ -37,6 +37,7 @@ properties:
               - qcom,sm8150-apss-shared
       - items:
           - enum:
+              - qcom,msm8226-apcs-kpss-global
               - qcom,msm8916-apcs-kpss-global
               - qcom,msm8939-apcs-kpss-global
               - qcom,msm8953-apcs-kpss-global
