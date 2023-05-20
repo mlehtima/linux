@@ -161,9 +161,28 @@
 			#interrupt-cells = <3>;
 		};
 
+/*
 		apcs: syscon@f9011000 {
 			compatible = "syscon";
 			reg = <0xf9011000 0x1000>;
+		};
+*/
+		apcs: mailbox@f9011000 {
+			compatible = "qcom,msm8916-apcs-kpss-global", "syscon";
+			reg = <0xf9011000 0x1000>;
+			#mbox-cells = <1>;
+			clocks = <&a53pll>, <&gcc GPLL0_VOTE>;
+			clock-names = "pll", "aux";
+			#clock-cells = <0>;
+		};
+
+		a53pll: clock@f9016000 {
+			compatible = "qcom,msm8916-a53pll";
+			reg = <0xf9016000 0x40>;
+			#clock-cells = <0>;
+			clocks = <&xo_board>;
+//			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>;
+			clock-names = "xo";
 		};
 
 		watchdog@f9017000 {
