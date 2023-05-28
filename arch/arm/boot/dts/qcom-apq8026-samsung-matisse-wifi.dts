@@ -279,6 +279,16 @@
 	};
 };
 
+&camss {
+	vdda-supply = <&pm8226_l4>;
+
+	status = "okay";
+};
+
+&cci {
+	status = "okay";
+};
+
 &rpm_requests {
 	regulators {
 		compatible = "qcom,rpm-pm8226-regulators";
