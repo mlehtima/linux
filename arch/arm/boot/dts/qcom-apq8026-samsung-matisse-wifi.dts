@@ -6,6 +6,7 @@
 /dts-v1/;
 
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
 #include "qcom-msm8226.dtsi"
 #include "qcom-pm8226.dtsi"
 
@@ -20,9 +21,10 @@
 	aliases {
 		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
 		mmc1 = &sdhc_2; /* SDC2 SD card slot */
-		display0 = &framebuffer0;
+//		display0 = &framebuffer0;
 	};
 
+#if 0
 	chosen {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -39,6 +41,7 @@
 			format = "r8g8b8";
 		};
 	};
+#endif
 
 	gpio-hall-sensor {
 		compatible = "gpio-keys";
@@ -93,7 +96,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		backlight@2c {
+		backlight: backlight@2c {
 			compatible = "ti,lp8556";
 			reg = <0x2c>;
 
@@ -127,6 +130,53 @@
 		clocks = <&mmcc CAMSS_GP0_CLK>;
 		pinctrl-0 = <&backlight_pwm_default_state>;
 		pinctrl-names = "default";
+	};
+
+	reg_lvds_1p8: regulator-lvds-1p8 {
+		compatible = "regulator-fixed";
+		regulator-name = "lvds_1p8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		/* FIXME: Set up TC358764 DSI->LVDS bridge properly */
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <200>;
+
+		gpio = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-0 = <&lvds_en_default>;
+		pinctrl-names = "default";
+	};
+
+	reg_lvds_3p3: regulator-lvds-3p3 {
+		compatible = "regulator-fixed";
+		regulator-name = "lvds_3p3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		/* FIXME: Set up TC358764 DSI->LVDS bridge properly */
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <200>;
+
+		gpio = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	reg_lcd: panel-regulator {
+		compatible = "regulator-fixed";
+
+		regulator-name = "lcd";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+		regulator-boot-on;
+
+		gpio = <&pm8226_gpios 2 GPIO_OPEN_SOURCE>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_en_default>;
 	};
 
 	reg_tsp_1p8v: regulator-tsp-1p8v {
@@ -224,6 +274,10 @@
 	status = "okay";
 };
 
+&blsp1_i2c1 {
+	status = "okay";
+};
+
 &blsp1_i2c2 {
 	status = "okay";
 
@@ -262,6 +316,7 @@
 &blsp1_i2c5 {
 	status = "okay";
 
+/*
 	touchscreen@4a {
 		compatible = "atmel,maxtouch";
 		reg = <0x4a>;
@@ -276,6 +331,56 @@
 
 		vdd-supply = <&reg_tsp_1p8v>;
 		vdda-supply = <&reg_tsp_3p3v>;
+	};
+*/
+};
+
+&dsi0 {
+//	vdda-supply = <&pm8226_l4>;
+//	vdd-supply = <&pm8226_l5>;
+//	vddio-supply = <&pm8226_l8>;
+
+	panel@0 {
+		/* FIXME: Set up TC358764 DSI->LVDS bridge properly */
+		compatible = "samsung,tc358764-ltl101al06-simple";
+		reg = <0>;
+
+		power-supply = <&reg_lcd>;
+//		backlight = <&backlight>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&dsi_phy0 {
+//	vddio-supply = <&pm8226_l8>;
+};
+
+&mdss {
+	status = "okay";
+};
+
+&gpu {
+	status = "okay";
+};
+
+&pm8226_gpios {
+	lcd_en_default: lcd-en-default-state {
+		pins = "gpio2";
+		function = PMIC_GPIO_FUNC_FUNC1;
+//		function = PMIC_GPIO_FUNC_NORMAL;
+		bias-disable;
+		power-source = <3>;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
 	};
 };
 
@@ -317,11 +422,13 @@
 		pm8226_l4: l4 {
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
+			regulator-always-on;
 		};
 
 		pm8226_l5: l5 {
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
+			regulator-always-on;
 		};
 
 		pm8226_l6: l6 {
@@ -477,6 +584,13 @@
 	backlight_pwm_default_state: backlight-pwm-default-state {
 		pins = "gpio33";
 		function = "gp0_clk";
+	};
+
+	lvds_en_default: lvds-en-default-state {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
 	};
 
 	muic_int_default_state: muic-int-default-state {
