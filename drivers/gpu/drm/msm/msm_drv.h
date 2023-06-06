@@ -519,7 +519,7 @@ void msm_hrtimer_work_init(struct msm_hrtimer_work *work,
 			   enum hrtimer_mode mode);
 
 #define DBG(fmt, ...) DRM_DEBUG_DRIVER(fmt"\n", ##__VA_ARGS__)
-#define VERB(fmt, ...) if (0) DRM_DEBUG_DRIVER(fmt"\n", ##__VA_ARGS__)
+#define VERB(fmt, ...) DRM_DEBUG_DRIVER(fmt"\n", ##__VA_ARGS__)
 
 static inline int align_pitch(int width, int bpp)
 {

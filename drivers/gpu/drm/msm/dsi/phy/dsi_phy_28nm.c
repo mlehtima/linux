@@ -390,6 +390,9 @@ static int dsi_pll_28nm_vco_prepare_8226(struct clk_hw *hw)
 
 	DBG("id=%d", pll_28nm->phy->id);
 
+	if (unlikely(pll_28nm->phy->pll_on))
+		return 0;
+
 	pll_28nm_software_reset(pll_28nm);
 
 	/*
@@ -442,6 +445,8 @@ static int dsi_pll_28nm_vco_prepare_8226(struct clk_hw *hw)
 		DRM_DEV_ERROR(dev, "DSI PLL lock failed\n");
 	else
 		DBG("DSI PLL Lock success");
+
+	pll_28nm->phy->pll_on = true;
 
 	return locked ? 0 : -EINVAL;
 }

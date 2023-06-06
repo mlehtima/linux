@@ -305,6 +305,7 @@ static int panel_simple_suspend(struct device *dev)
 {
 	struct panel_simple *p = dev_get_drvdata(dev);
 
+	printk(KERN_EMERG "panel_simple_suspend\n");
 	gpiod_set_value_cansleep(p->enable_gpio, 0);
 	regulator_disable(p->supply);
 	p->unprepared_time = ktime_get_boottime();
@@ -338,6 +339,7 @@ static int panel_simple_resume(struct device *dev)
 	struct panel_simple *p = dev_get_drvdata(dev);
 	int err;
 
+	printk(KERN_EMERG "panel_simple_resume\n");
 	panel_simple_wait(p->unprepared_time, p->desc->delay.unprepare);
 
 	err = regulator_enable(p->supply);
