@@ -772,8 +772,16 @@ static const struct camss_subdev_resources csid_res_7280[] = {
 	/* CSID0 */
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
-		.clock = { "vfe0_csid", "vfe0" },
+		.clock = { "vfe0_csid", "vfe0_cphy_rx", "vfe0", },
+/*
+		.clock = { "cpas_ahb", "cphy_rx_src", "slow_ahb_src",
+				"soc_ahb", "vfe0", "vfe0_src",
+				"vfe0_cphy_rx", "csi0",
+				"csi0_src" },
+		.clock = { "vfe0_csid", "vfe0_cphy_rx", "vfe0", "vfe0_areg", "vfe0_ahb" },
+*/
 		.clock_rate = { { 300000000, 400000000 },
+				{ 0 },
 				{ 380000000, 510000000, 637000000, 760000000 } },
 		.reg = { "csid0" },
 		.interrupt = { "csid0" },
@@ -783,8 +791,9 @@ static const struct camss_subdev_resources csid_res_7280[] = {
 	/* CSID1 */
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
-		.clock = { "vfe0_csid", "vfe0" },
+		.clock = { "vfe1_csid", "vfe1_cphy_rx", "vfe1", },
 		.clock_rate = { { 300000000, 400000000 },
+				{ 0 },
 				{ 380000000, 510000000, 637000000, 760000000 } },
 		.reg = { "csid1" },
 		.interrupt = { "csid1" },
@@ -794,8 +803,9 @@ static const struct camss_subdev_resources csid_res_7280[] = {
 	/* CSID2 */
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
-		.clock = { "vfe0_csid", "vfe0" },
+		.clock = { "vfe2_csid", "vfe2_cphy_rx", "vfe2", },
 		.clock_rate = { { 300000000, 400000000 },
+				{ 0 },
 				{ 380000000, 510000000, 637000000, 760000000 } },
 		.reg = { "csid2" },
 		.interrupt = { "csid2" },
@@ -805,8 +815,9 @@ static const struct camss_subdev_resources csid_res_7280[] = {
 	/* CSID3 */
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
-		.clock = { "vfe0_csid", "vfe0" },
+		.clock = { "vfe_lite0_csid", "vfe_lite0_cphy_rx", "vfe_lite0", },
 		.clock_rate = { { 300000000, 400000000 },
+				{ 0 },
 				{ 320000000, 400000000, 480000000, 600000000 } },
 		.reg = { "csid3" },
 		.interrupt = { "csid3" },
@@ -816,8 +827,9 @@ static const struct camss_subdev_resources csid_res_7280[] = {
 	/* CSID4 */
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
-		.clock = { "vfe0_csid", "vfe0" },
+		.clock = { "vfe_lite1_csid", "vfe_lite1_cphy_rx", "vfe_lite1", },
 		.clock_rate = { { 300000000, 400000000 },
+				{ 0 },
 				{ 320000000, 400000000, 480000000, 600000000 } },
 		.reg = { "csid4" },
 		.interrupt = { "csid4" },
