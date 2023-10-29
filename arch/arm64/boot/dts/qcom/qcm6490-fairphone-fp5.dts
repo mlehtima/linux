@@ -335,6 +335,263 @@
 		clocks = <&camcc CAM_CC_MCLK3_CLK>;
 		regulator-always-on;
 	};
+
+// CAM HACKS
+/*
+	fake-reg-cam-extra1 {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam-extra1";
+		clocks = <&camcc CAM_CC_FAST_AHB_CLK_SRC>;
+		regulator-always-on;
+	};
+
+	fake-reg-cam-extra2 {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam-extra2";
+		clocks = <&camcc CAM_CC_CPHY_RX_CLK_SRC>;
+		regulator-always-on;
+	};
+
+	fake-reg-cam-extra3 {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam-extra3";
+		clocks = <&camcc CAM_CC_IFE_0_DSP_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam-extra3 {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam-extra3";
+		clocks = <&camcc CAM_CC_IFE_1_DSP_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam-extra3 {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam-extra3";
+		clocks = <&camcc CAM_CC_IFE_2_DSP_CLK>;
+		regulator-always-on;
+	};
+
+
+
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam1";
+		clocks = <&gcc GCC_CAMERA_HF_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam2";
+		clocks = <&gcc GCC_CAMERA_SF_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam3";
+		clocks = <&camcc CAM_CC_CAMNOC_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam4";
+		clocks = <&camcc CAM_CC_CAMNOC_AXI_CLK_SRC>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam5";
+		clocks = <&camcc CAM_CC_CPAS_AHB_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam6";
+		clocks = <&camcc CAM_CC_CSIPHY0_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam7";
+		clocks = <&camcc CAM_CC_CSI0PHYTIMER_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam8";
+		clocks = <&camcc CAM_CC_CSIPHY1_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam9";
+		clocks = <&camcc CAM_CC_CSI1PHYTIMER_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam10";
+		clocks = <&camcc CAM_CC_CSIPHY2_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam11";
+		clocks = <&camcc CAM_CC_CSI2PHYTIMER_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam12";
+		clocks = <&camcc CAM_CC_CSIPHY3_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam13";
+		clocks = <&camcc CAM_CC_CSI3PHYTIMER_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam14";
+		clocks = <&camcc CAM_CC_CSIPHY4_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam15";
+		clocks = <&camcc CAM_CC_CSI4PHYTIMER_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam16";
+		clocks = <&camcc CAM_CC_ICP_AHB_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam17";
+		clocks = <&camcc CAM_CC_ICP_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam18";
+		clocks = <&camcc CAM_CC_SLOW_AHB_CLK_SRC>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam19";
+		clocks = <&camcc CAM_CC_IFE_0_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam20";
+		clocks = <&camcc CAM_CC_IFE_0_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam21";
+		clocks = <&camcc CAM_CC_IFE_0_CPHY_RX_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam22";
+		clocks = <&camcc CAM_CC_IFE_0_CSID_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam23";
+		clocks = <&camcc CAM_CC_IFE_1_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam24";
+		clocks = <&camcc CAM_CC_IFE_1_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam25";
+		clocks = <&camcc CAM_CC_IFE_1_CPHY_RX_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam26";
+		clocks = <&camcc CAM_CC_IFE_1_CSID_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam27";
+		clocks = <&camcc CAM_CC_IFE_2_AXI_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam28";
+		clocks = <&camcc CAM_CC_IFE_2_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam29";
+		clocks = <&camcc CAM_CC_IFE_2_CPHY_RX_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam30";
+		clocks = <&camcc CAM_CC_IFE_2_CSID_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam31";
+		clocks = <&camcc CAM_CC_IFE_LITE_0_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam32";
+		clocks = <&camcc CAM_CC_IFE_LITE_0_CPHY_RX_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam33";
+		clocks = <&camcc CAM_CC_IFE_LITE_0_CSID_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam34";
+		clocks = <&camcc CAM_CC_IFE_LITE_1_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam35";
+		clocks = <&camcc CAM_CC_IFE_LITE_1_CPHY_RX_CLK>;
+		regulator-always-on;
+	};
+	fake-reg-cam {
+		compatible = "regulator-fixed-clock";
+		regulator-name = "fake-reg-cam36";
+		clocks = <&camcc CAM_CC_IFE_LITE_1_CSID_CLK>;
+		regulator-always-on;
+	};
+*/
+
+// CAM HACKS
 };
 
 &apps_rsc {
