@@ -45,7 +45,8 @@ static const struct camss_subdev_resources csiphy_res_8x16[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_2ph_1_0
+			.hw_ops = &csiphy_ops_2ph_1_0,
+			.formats = &csiphy_formats_8x16
 		}
 	},
 
@@ -61,7 +62,8 @@ static const struct camss_subdev_resources csiphy_res_8x16[] = {
 		.interrupt = { "csiphy1" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_2ph_1_0
+			.hw_ops = &csiphy_ops_2ph_1_0,
+			.formats = &csiphy_formats_8x16
 		}
 	}
 };
@@ -165,7 +167,8 @@ static const struct camss_subdev_resources csiphy_res_8x96[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	},
 
@@ -181,7 +184,8 @@ static const struct camss_subdev_resources csiphy_res_8x96[] = {
 		.interrupt = { "csiphy1" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	},
 
@@ -197,7 +201,8 @@ static const struct camss_subdev_resources csiphy_res_8x96[] = {
 		.interrupt = { "csiphy2" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	}
 };
@@ -374,7 +379,8 @@ static const struct camss_subdev_resources csiphy_res_660[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	},
 
@@ -392,7 +398,8 @@ static const struct camss_subdev_resources csiphy_res_660[] = {
 		.interrupt = { "csiphy1" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	},
 
@@ -410,7 +417,8 @@ static const struct camss_subdev_resources csiphy_res_660[] = {
 		.interrupt = { "csiphy2" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_8x96
 		}
 	}
 };
@@ -609,7 +617,8 @@ static const struct camss_subdev_resources csiphy_res_845[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 
@@ -631,7 +640,8 @@ static const struct camss_subdev_resources csiphy_res_845[] = {
 		.interrupt = { "csiphy1" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 
@@ -653,7 +663,8 @@ static const struct camss_subdev_resources csiphy_res_845[] = {
 		.interrupt = { "csiphy2" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 
@@ -675,7 +686,8 @@ static const struct camss_subdev_resources csiphy_res_845[] = {
 		.interrupt = { "csiphy3" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	}
 };
@@ -854,7 +866,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY1 */
@@ -867,7 +880,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy1" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY2 */
@@ -880,7 +894,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy2" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY3 */
@@ -893,7 +908,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy3" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY4 */
@@ -906,7 +922,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy4" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY5 */
@@ -919,7 +936,8 @@ static const struct camss_subdev_resources csiphy_res_8250[] = {
 		.interrupt = { "csiphy5" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	}
 };
@@ -1136,7 +1154,8 @@ static const struct camss_subdev_resources csiphy_res_sc8280xp[] = {
 		.interrupt = { "csiphy0" },
 		.type = CAMSS_SUBDEV_TYPE_CSIPHY,
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY1 */
@@ -1148,7 +1167,8 @@ static const struct camss_subdev_resources csiphy_res_sc8280xp[] = {
 		.reg = { "csiphy1" },
 		.interrupt = { "csiphy1" },
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY2 */
@@ -1160,7 +1180,8 @@ static const struct camss_subdev_resources csiphy_res_sc8280xp[] = {
 		.reg = { "csiphy2" },
 		.interrupt = { "csiphy2" },
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 	/* CSIPHY3 */
@@ -1172,7 +1193,8 @@ static const struct camss_subdev_resources csiphy_res_sc8280xp[] = {
 		.reg = { "csiphy3" },
 		.interrupt = { "csiphy3" },
 		.csiphy = {
-			.hw_ops = &csiphy_ops_3ph_1_0
+			.hw_ops = &csiphy_ops_3ph_1_0,
+			.formats = &csiphy_formats_sdm845
 		}
 	},
 };
